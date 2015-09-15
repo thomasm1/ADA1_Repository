@@ -1,0 +1,570 @@
+---
+title: "ADA1_HW04TM_091215"
+author: "Anonymous"
+date: "`r format(Sys.time(), '%B %d, %Y')`"
+output:
+  html_document:
+    toc: true
+bibliography: ADA1_bib_AddHealthTM.bib
+nocite: | 
+  @mcdill1965family, 
+  @flint1992parental, 
+  @davis2005influence, 
+  @fisher1999parental, 
+  @dennis2005role,
+  @mccarron2006gap
+---
+
+
+---
+
+# Rubric
+1. Make three plots and interpret each with one sentence describing the visual relationship between variables.
+    1. (2 p) Bivariate plot: Scatter plot: $x$ = numerical,"Number of Hours Worked" $y$ = numerical, "Expectationto go to College" (from WS 07), with axis labels and title, and _interpret_.
+    2. (2 p) Bivariate plot: Box plot: $x$ = categorical, "Expectation to Attend College"  $y$ = numerical, "Perceived Parental College Concern", (from WS 07), with axis labels and title, and _interpret_.
+    3. (2 p) Bivariate plot: Mosaic or bar plot: $x$ = categorical, $y$ = categorical (from WS 07), with axis labels and title, and _interpret_.
+
+
+2. Data cleaning rules, violations, and corrections.
+    1. (1 p) Create an "editrules.txt" text file (can be a name of your choosing)
+      which includes the admissible values for each variable.
+    2. (1 p) Read your "editrules.txt" file and display it with `readLines()`.
+      Use `library(editrules)` and function `editfile([yourfilename])`
+      to define the edit rules and display those.
+    3. (1 p) Summarize your violated edits with `violatedEdits()` and display them with `summary()`.
+    4. (1 p) Describe how you deal with violated edits in word, then do it in code.
+---
+
+``` {R}
+#fn.this <- "ADA1_HW04_tmNouveau1.Rmd"
+#setwd("C:/Users/Thomas/Dropbox/_DOCUMENTS_/__ADA1/ADA1_Content/Nouvelle")
+#library(knitr)
+#purl(fn.this)
+# rmarkdown::render(fn.this)
+knitr::opts_chunk$set(comment = NA, message = FALSE, warning = FALSE, fig.align = "center")
+knitr::opts_chunk$set(fig.height = 4, fig.width = 6)
+knitr::opts_chunk$set(cache = TRUE)           #$
+# Note: The "cache=TRUE" option will save the computations of code chunks so R it doesn't recompute
+#   Code chunks will be recompiled if they are edited.
+#   A folder is created with the cache in it -- if you delete the folder, then
+#   all the code chunks will recompute again.  I delete this folder when I want
+#   to make sure everything works as expected.
+```
+
+
+
+----------------------------------------
+
+# HW01: Personal Codebook
+
+## Question of Interest: 
+
+__Dataset__: National Longitudinal Adolescent Health Survey. Wave1, survey date is 1995 tracking high school students (including feeder middle schools)
+  
+  
+__Initial thinking__:  
+Based on the premise of family influence, as framed in theoretical terms of "Social Control" theory Bonding->Family AttachmentCloseness-heldConstant->
+	H1a High concern of parent for college attend, positive assoc with respondant's expectation.
+	H1b Disconcern--even antipathy--of parent for college attend, negative assoc with respondent's expectation.
+Educational Reproduction
+	H2aLow-income positive association with Working
+	H2bHigh-income negative association with Working ~0hrs
+	H2cMiddle and high number of hours negative association with college expectation.
+	H2dZero to five hours/week positive association wih college expectation. 
+RQ:
+	H3Does Parental College Concern moderate the negative assocation between working and expectation?
+
+__Topic of interest__: I am interested in the association between parental college concern and student college-attendance expectationdece, and how it may be affected by student ethnicity, SES, age, gender, GPA-status, and other factors.
+  UPDATE: I truly need respondent's peers' behavior and attitudes, which is  available through related network dataset. Will find out if feasure to implement this nomination-generated friend data. UPDATE VARIABLES OF PRIMARY INTEREST [NOT CONTROLS]: AID, BIO_SEX, H1WP16, H1MF2A, H1EE1, H1EE2
+  
+__How I did it__: Using Codebook of AddHealth_Wave1 literature review via Mendeley, Extensive use of AddHealthW1_CodeBook.pdf
+
+__Literature Review Recap__: Based on the literature, most studies do not isolate the parents' effect on students' college desires without contextualizing (and controlling for) family and peer environment. Therefore, I added the first peer variable as a placeholder until I can obtain the nomatinated peers' characteristics. 
+
+## Codebook
+Dataset: AddHealth
+Primary association: Student Desire to Attend College VS Parental College Concern 
+
+
+```
+Key:
+VarName
+  Variable description
+  Data type (Continuous, Discrete, Nominal, Ordinal)
+  Frequency ItemValue Description
+  
+AID (Wave 1)
+  UNIQUE ID NUMBER WITH NO ALPHABETICS
+  Nominal
+  Unique Identification number
+
+BIO_SEX 
+  GENDER MALE
+  2 = female
+  1 = male
+  6 = NA
+  Nominal
+  
+AGE (Age)
+  AGE
+  Age:   age = (mdy(imonth,iday,1995)-mdy(h1gi1m,15,(h1gi1y+1900)))/365.25
+  Continuous
+  
+H1EE1
+  DESIRE TO GO TO COLLEGE
+  DesireCollege: 1-5; 6=refused, 8=don't know, 9=NotApplic
+  Discrete
+  1-5. 1=low
+
+H1EE2
+  EXPECTATION TO GO TO COLLEGE
+  ExpectCollege: 1-5; 6=refused, 8=don't know, 9=NotApplic 
+  Discrete
+  1-5. 1= low; 5=high
+
+H1EE3
+  WHETHER WORKED IN PAST FOUR WEEKS
+  Working: 0=no, 1=yes, 6=refused, 8=don't know
+ 
+H1EE4
+  HOURS WORKED OUTSIDE HOME IN TYPICAL NON-SUMMER WEEK 
+  
+H1WP11 
+  STUDENT-PERCEIVED MOTHER PARENTAL CONCERN ABOUT COLLEGE
+  Interval
+  ParentConcernM:  1-5;  
+  6=refused,
+  7=noDad 
+  8=don't know, 
+  9=NotApplic
+  1-5. 1 = low concern; 5=high concern
+  
+H1WP16 
+  STUDENT-PERCEIVED FATHER PARENTAL CONCERN ABOUT COLLEGE
+  Interval
+  ParentConcernF: 1-5;  
+  6=refused,
+  7=noDad 
+  8=don't know, 
+  9=NotApplic
+  1-5. 1 = low concern; 5=high concern
+```
+----------------------------------------
+
+# HW02: Literature Review
+
+__RQ_1__: What is the relationship between respondent non-summer working VS respondent expectation to go to college?  
+__RQ-2__: Does parental college concern change relationship
+
+## Research Question: 
+__RQ__: What is the relationship between parental college expectation for the respondent VS respondent desire to go to college?  
+
+## RUBRIC
+__Dataset__: National Longitudinal Adolescent Health Survey, with codebook: AddHealthW1_CodeBook.pdf 
+  UPDATE: I will no longer be attempting to merge AddHealthW4.
+  
+__Initial thinking__:  ADA1 TM091415 Add Health Parent Mediates Hours Worked Partly due to a Phenomenon of Latino Culture, whereby the oldest male sibling is expected to help take care of his brothers and sisters, and so there is less expectation among males to attend college. 
+  
+__Topic of interest__: I am interested in the association between parental college concern and student college-attendance expectation.  College expectation is much more accurate than college "aspiration" because the term connotes desire and wish; it also reflects moral or social self-identity according to some researchers.  I'm also and how it may be affected by student ethnicity, SES, age, gender, GPA-status, and other factors.
+  UPDATE: I truly need respondent's peers' behavior and attitudes, which is  available through related network dataset. Will find out if feasure to implement this nomination-generated friend data. UPDATE VARIABLES OF PRIMARY INTEREST [NOT CONTROLS]: AID,BIO_SEX,H1WP16, H1MF2A, H1EE1, H1EE2
+  
+__How I did it__: Using Codebook of AddHealth_Wave1 literature review via Mendeley, Extensive use of AddHealthW1_CodeBook.pdf
+
+__Literature Review Recap__: Based on the literature, most studies do not isolate the parents' effect on students' college desires without contextualizing (and controlling for) family and peer environment. Therefore, I added the first peer variable as a placeholder until I can obtain the nomatinated peers' characteristics. 
+
+## Citations
+  @mcdill1965family, 
+  @flint1992parental, 
+  @davis2005influence, 
+  @fisher1999parental, 
+  @dennis2005role,
+  @mccarron2006gap
+
+<!---
+Unused references:
+   @kim2005social, |
+   @mccarron2006gap, |
+-->
+-------------------------------------
+
+# HW03: Data Subset, Univariate Summaries And Plots
+
+## Purpose of study
+
+## Variables
+
+Variables from NESARC that will be used include (already in codebook, above):
+
+* `AID` (unique ID number with no alphabetics),
+* `H1GI1M` (BirthMonth, Birth month, two digits),
+* `H1GI1Y` (BirthYear, Birth year, two digits),
+* `BIO_SEX` (Sex),
+* `H1EE1` (DesireCollege, Desire to go to college),
+* `H1EE2` (ExpectCollege, Expectation to go to college),
+* `H1EE3` (Working, Whether worked in past four weeks),
+* `H1EE4` (HoursWorked, Non-summer hours worked per week), 
+* `H1WP11` (ParentConcernM)  and
+* `H1WP16` (ParentConcernF).
+
+## Data subset
+
+
+## Data subset
+### National Longitudinal Adolescent Health Survey, with codebook: AddHealthW1_CodeBook.pdf
+
+```{R}
+library(PDS)
+dim(AddHealth) # n=6504
+addheaalth <- as.data.frame(AddHealth)
+```
+
+##2. Variables from personal codebook:
+
+
+```{R}
+# variables to include in our data subset
+var.list <- c("AID"
+            , "H1GI1M"
+            , "H1GI1Y"
+            , "BIO_SEX"
+            , "H1EE1"
+            , "H1EE2"
+            , "H1EE3"
+            , "H1EE4"
+            , "H1WP11"
+            , "H1WP16"
+                )
+var.list
+# subset of data
+addhealth.sub <- subset(AddHealth, select = var.list)
+##4. Subset
+dim(addhealth.sub)
+str(addhealth.sub)
+sort(colnames(addhealth.sub))
+##5. Numerical summaries for all variables 
+summary(addhealth.sub)
+```
+
+## Rename
+
+``` {R}
+#Extra Variables
+DOBYear <- (addhealth.sub$H1GI1Y + 1900)
+
+# note, if the new "dplyr" package is installed, this may not work correctly
+library(plyr) # for rename(dat, c("from" = "to"))
+addhealth.sub <- rename(addhealth.sub, c(
+                        "AID"        =  "AID"
+                      , "BIO_SEX"        = "Sex"
+                      , "H1GI1M"       = "BirthMonth"
+                      , "H1GI1Y"      = "BirthYear"
+                      , "H1EE1"          = "DesireCollege"
+                      , "H1EE2"     = "ExpectCollege"
+                      , "H1EE3"     = "Working"
+                      , "H1EE4"     = "HoursWorked"
+                      , "H1WP11"    = "ParentConcernM"
+                      , "H1WP16"      = "ParentConcernF"
+                                                ))
+
+
+```
+
+A quick summary of the variables indicates many missing values.
+```{R}
+# summary of variables -- notice many NAs
+summary(addhealth.sub)
+```
+
+# Original (renamed) variables:
+AID               %in% 1:43093           # range of ID numbers
+Sex                 %in% 1:2               # 1 and 2 = c("Male", "Female")
+DOBYear                 %in% 1980:1995             # based on codebook
+DesireCollege       %in% c(1:2, 9)         # 1 = smoked in the last 12 mo
+ExpectCollege   %in% 0:1               # factor takes values 1 or 2
+Working         %in% c(0:6, 9)         # daily to once/mo
+HoursWorked     %in% c(0:98, 99)       # number cig
+ParentConcernM           %in% 1:5               # 5 groups
+ParentConcernF          %in% 0:1               # no/yes
+
+# Mixed Rules
+#   (Note: == is not allowed in a mixed edit (I don't know why not), so I use %in%, instead)
+# if (addhealth.sub$HoursWorked %in% 5:60) (addhealth.sub$Working != 0)
+<!--
+Age <- (mdy(imonth,iday,1995)-mdy(H1GI1M,15,(H1GI1Y+1900)))/365.25
+(NA == 1)
+library(lubridate)
+DOB <- mdy(paste(addhealth.sub$H1GI1M, 1, 1900+addhealth.sub$H1GI1Y))
+
+```{R}
+addhealth.sub <- subset(addhealth.sub, subset = (DOBYear <= 1980) )
+summary(DOBYear)
+# students approximately 15 and over
+dim(addhealth.sub)
+summary(addhealth.sub)
+```
+-->
+
+```{R}
+# install.packages("editrules")
+fn.edit.rules <- "ADA1_HW_04_AddhealthTM_DataCleaningEditRules.txt"
+readLines(fn.edit.rules)
+
+# Encode these rules using the editrules package
+library(editrules)
+EditRules.AH.sub <- editfile(fn.edit.rules)
+EditRules.AH.sub
+ve.AH.sub <- violatedEdits(EditRules.AH.sub, addhealth.sub)
+summary(ve.AH.sub)
+```
+
+```{R}
+op <- par(no.readonly = TRUE)         # save plot settings
+par(mfrow=c(1,1), mar = c(0,0,0,0))
+plot(EditRules.AH.sub)
+par(op)                               # restore plot settings
+```
+### Coding missing values
+```{R}
+# Note for this first variable, there are still three factor levels
+str(addhealth.sub$ExpectCollege)
+#   even though only the first category has observations.
+summary(addhealth.sub$ExpectCollege)
+
+# First, replace any values that are "NA" with 0 (NA indicates 0 or 100+, so I'm going to code as 0)
+
+#Sex
+str(addhealth.sub$Sex)
+summary(addhealth.sub$Sex)
+#addhealth.sub$Sex[addhealth.sub$Sex == NA] <- 0
+# Next, replace any values that are "6" with NA
+addhealth.sub$Sex[addhealth.sub$Sex == 6] <- NA
+summary(addhealth.sub$Sex)
+# Then drop unused factor categories.
+addhealth.sub$Sex <- factor(addhealth.sub$Sex)[, drop = TRUE]
+summary(addhealth.sub$Sex)
+
+#DesireCollege
+str(addhealth.sub$DesireCollege)
+summary(addhealth.sub$DesireCollege)
+#addhealth.sub$DesireCollege[addhealth.sub$DesireCollege == NA] <- 0
+# Next, replace any values that are "9" with NA
+addhealth.sub$DesireCollege[addhealth.sub$DesireCollege == 6] <- NA
+addhealth.sub$DesireCollege[addhealth.sub$DesireCollege == 8] <- NA
+summary(addhealth.sub$DesireCollege)
+# Then drop unused factor categories.
+addhealth.sub$DesireCollege <- factor(addhealth.sub$DesireCollege)[, drop = TRUE]
+summary(addhealth.sub$DesireCollege)
+
+#ExpectCollege
+str(addhealth.sub$ExpectCollege)
+summary(addhealth.sub$ExpectCollege)
+#addhealth.sub$ExpectCollege[addhealth.sub$ExpectCollege == NA] <- 0
+# Next, replace any values that are "9" with NA
+addhealth.sub$ExpectCollege[addhealth.sub$ExpectCollege == 6] <- NA
+addhealth.sub$ExpectCollege[addhealth.sub$ExpectCollege == 8] <- NA
+summary(addhealth.sub$ExpectCollege)
+# Then drop unused factor categories.
+addhealth.sub$DesireCollege <- factor(addhealth.sub$DesireCollege)[, drop = TRUE]
+summary(addhealth.sub$DesireCollege)
+
+#ParentConcernM
+str(addhealth.sub$ParentConcernM)
+summary(addhealth.sub$ParentConcernM)
+#addhealth.sub$ParentConcernM[addhealth.sub$ParentConcernM == NA] <- 0
+# Next, replace any values that are "9" with NA
+addhealth.sub$ParentConcernM[addhealth.sub$ParentConcernM == 6] <- NA
+addhealth.sub$ParentConcernM[addhealth.sub$ParentConcernM == 7] <- NA
+addhealth.sub$ParentConcernM[addhealth.sub$ParentConcernM == 8] <- NA
+addhealth.sub$ParentConcernM[addhealth.sub$ParentConcernM == 9] <- NA
+summary(addhealth.sub$ParentConcernM)
+# Then drop unused factor categories.
+addhealth.sub$ParentConcernM <- factor(addhealth.sub$ParentConcernM)[, drop = TRUE]
+summary(addhealth.sub$ParentConcernM)
+
+#ParentConcernF
+str(addhealth.sub$ParentConcernF)
+summary(addhealth.sub$ParentConcernF)
+#addhealth.sub$ParentConcernF[addhealth.sub$ParentConcernF == NA] <- 0
+# Next, replace any values that are "9" with NA
+addhealth.sub$ParentConcernF[addhealth.sub$ParentConcernF == 6] <- NA
+addhealth.sub$ParentConcernF[addhealth.sub$ParentConcernF == 7] <- NA
+addhealth.sub$ParentConcernF[addhealth.sub$ParentConcernF == 8] <- NA
+addhealth.sub$ParentConcernF[addhealth.sub$ParentConcernF == 9] <- NA
+summary(addhealth.sub$ParentConcernF)
+# Then drop unused factor categories.
+addhealth.sub$ParentConcernF <- factor(addhealth.sub$ParentConcernF)[, drop = TRUE]
+summary(addhealth.sub$ParentConcernF)
+
+#Working
+str(addhealth.sub$Working)
+summary(addhealth.sub$Working)
+#addhealth.sub$Working[addhealth.sub$Working == NA] <- 0
+# Next, replace any values that are "9" with NA
+addhealth.sub$Working[addhealth.sub$Working == 6] <- NA
+addhealth.sub$Working[addhealth.sub$Working == 8] <- NA
+summary(addhealth.sub$Working)
+# Then drop unused factor categories.
+addhealth.sub$Working <- factor(addhealth.sub$Working)[, drop = TRUE]
+summary(addhealth.sub$Working)
+
+#HoursWorked
+str(addhealth.sub$HoursWorked)
+summary(addhealth.sub$HoursWorked)
+#addhealth.sub$HoursWorked[addhealth.sub$HoursWorked == NA] <- 0
+# Next, replace any values that are "9" with NA
+addhealth.sub$HoursWorked[addhealth.sub$HoursWorked == 996] <- NA
+addhealth.sub$HoursWorked[addhealth.sub$HoursWorked == 998] <- NA
+addhealth.sub$HoursWorked[addhealth.sub$HoursWorked == 999] <- NA
+summary(addhealth.sub$HoursWorked)
+# Then drop unused factor categories.
+summary(addhealth.sub$HoursWorked)
+summary(addhealth.sub)
+```
+
+Finally, use `na.omit()` to remove any records with missing values.
+```{R}
+dim(addhealth.sub)
+# remove rows with missing values
+addhealth.sub <- na.omit(addhealth.sub)
+dim(addhealth.sub)
+summary(addhealth.sub)
+```
+
+### Dataset is free of missing variables, Final N is 5,011. from original 6,504; Missing N: 1493
+
+
+
+
+
+In-class: One plot for each combination of variable types: numerical and categorical.
+```{R}
+library(ggplot2)
+p1 <- ggplot(data = addhealth.sub, aes(x = Sex))
+p1 <- p1 + geom_bar()
+p1
+
+p1a <- ggplot(data = addhealth.sub, aes(x = HoursWorked))
+p1a <- p1a + geom_bar()
+p1a
+
+p2 <- ggplot(data = addhealth.sub, aes(x = DesireCollege))
+p2 <- p2 + geom_bar()
+p2
+
+
+p2a <- ggplot(data = addhealth.sub, aes(x = ExpectCollege))
+p2a <- p2a + geom_bar()
+p2a
+
+```
+Experiment with the code in the previous code chunk to change the color, the
+title, and if needed the labels on the $x$- and $y$-axes.
+
+```{R}
+p <- ggplot(data = addhealth.sub, aes(x = HoursWorked))
+p <- p + geom_histogram(binwidth = 200)
+p <- p + geom_rug()
+p <- p + labs(x = "Hours Worked")
+p <- p + theme_bw()
+p
+```
+
+### Creating Density Plots
+#### Not working
+```{R}
+p <- ggplot(data = addhealth.sub, aes(x = HoursWorked))
+p <- p + geom_histogram(aes(y=..density..), binwidth = 200)
+p <- p + geom_rug()
+p <- p + geom_density(alpha=0.1, fill="white", adjust = 1.5)
+p <- p + labs(x = "Non-Summer Hours Worked")
+p <- p + theme_bw()
+p
+```
+
+----------------------------------------
+
+
+## Bivariate graphs (both categorical)
+### In the following scenario, Females (2) are compared to Males (1) in their expectations to attend college
+Consider using Hours Worked status (`HoursWorked`) to predict Expectation to go to College (`ExpectCollege`).
+
+The last graph needs a legend as well as a title.  While it is possible to construct a legend and title for the last graph, it is much better to use an approach that will generate the legend automatically.
+
+```{R}
+g1 <- ggplot(data = addhealth.sub, aes(x = Sex, fill = ExpectCollege)) +
+  geom_bar(position = "fill") +
+  theme_bw()
+#EBE
+# ylab
+g1
+
+g1a <- ggplot(data = addhealth.sub, aes(x = Sex, fill = DesireCollege)) +
+  geom_bar(position = "fill") +
+  theme_bw()
+#EBE
+# ylab
+g1a
+```
+
+Tweaking the last graph.
+
+```{R}
+g1 +
+  labs(x = "Gender", y = "Proportion", title = "Expectation to Go to College\n comparing MalesOne and FemalesTwo") +
+  scale_fill_discrete(name="Expectation to go to College\nGender")
+```
+
+```{R}
+##EBE
+#T2 <- xtabs(~ExpectCollege + HoursWorked, data = addhealth.sub)
+#T2
+#PT2 <- prop.table(T2, 2)
+#PT2
+#barplot(PT2)
+
+g2 <- ggplot(data = na.omit(addhealth.sub), aes(x = HoursWorked, fill = ExpectCollege)) +
+  geom_bar(position = "fill") +
+  theme_bw() +
+  theme(axis.text.x  = element_text(angle = 45, vjust = 0.5)) +
+  labs(x = "Hours Worked", y = "Expect College")
+g2
+
+g2a <- ggplot(data = na.omit(addhealth.sub), aes(x = HoursWorked, fill = DesireCollege)) +
+  geom_bar(position = "fill") +
+  theme_bw() +
+  theme(axis.text.x  = element_text(angle = 45, vjust = 0.5)) +
+  labs(x = "Hours Worked", y = "Desire College")
+g2a
+
+#THis is meaningful if working males are more coerced by money needs (thus expect college less) and females are less coerced (eg, work for social reasons and still expect college)
+ g3 <- g2 + facet_grid(Sex ~ .) +
+  theme(axis.text.x  = element_text(angle = 85, vjust = 0.5)) +
+  labs(x = "", y = "", title = "Hours Worked\n Hours Worked by Gender") +
+  scale_fill_discrete(name="Expectation to attend College\nBy Gender")
+ g3
+#This is meaningful if working males are more coerced by money needs (thus expect college less) and females are less coerced (eg, work for social reasons and still expect college)
+ 
+ 
+#EBE (a version of the plot above)
+#library(ggplot2)
+#ggplot(data = na.omit(addhealth.sub), aes(x = HoursWorked, fill = ExpectCollege)) +
+#  geom_bar(position = "fill") +
+#  theme_bw() +
+#  theme(axis.text.x  = element_text(angle = 45, vjust = 0.5)) +
+#  labs(x = "Hours Worked", y = "Expecttation of College") +
+#  facet_grid(Sex ~ .)
+
+```
+
+## The students that work 20 or more hours have less expectation to attend college
+### Not Working
+```{R}
+ggplot(data = na.omit(addhealth.sub), aes(x = HoursWorked, fill = ExpectCollege)) +
+  geom_bar(position = "fill") +
+  theme_bw() + facet_grid(Sex ~ ExpectCollege) +
+  theme(axis.text.x  = element_text(angle = 85, vjust = 0.5)) +
+  labs(x = "HoursWorked", y = "ExpectCollege", title = "Hours Worked \n Expectation to Attend College") +
+  scale_fill_discrete(name="HoursWorked\nStatus")
+```
+  
+## References
